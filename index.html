@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>大耳帽兜冰淇淋甜筒</title>
+  <link rel="icon" href="./assets/ui/ui-button-cinna-big-ear-puppy-transparent-480.webp" type="image/webp" />
+  <link rel="stylesheet" href="./style.css" />
+  <script>
+    /* loading watchdog — plain ES5 so it runs on every browser, even if the game script cannot */
+    (function () {
+      var t0 = Date.now(), shown = 0;
+      window.__boot = { real: 0, failed: false };
+      function el(id) { return document.getElementById(id); }
+      function paint() {
+        var fill = el('loaderFill'), pct = el('loaderPct');
+        if (!fill || window.__sceneReady) return;
+        var b = window.__boot, elapsed = (Date.now() - t0) / 1000;
+        var creep = Math.min(0.85, 1 - Math.exp(-elapsed / 9));      // keeps moving while waiting
+        shown = Math.max(shown, b.real, b.failed ? shown : creep * 0.9);
+        fill.style.width = Math.round(shown * 100) + '%';
+        pct.textContent = Math.round(shown * 100) + '%';
+        if (!b.failed && elapsed > 40 && !window.__sceneReady) window.__bootFail('加载时间有点久，网络可能不太稳定');
+      }
+      window.__bootFail = function (why) {
+        if (window.__boot.failed || window.__sceneReady) return;
+        window.__boot.failed = true;
+        var msg = el('loaderMsg'), box = el('loaderRetry');
+        if (msg) msg.textContent = why || '甜筒没烤好…';
+        if (box) box.hidden = false;
+      };
+      window.addEventListener('error', function (e) {
+        if (!window.__sceneReady && e && e.message) window.__bootFail('这个浏览器打不开 3D 甜筒（' + String(e.message).slice(0, 40) + '）');
+      });
+      setInterval(paint, 200);
+    })();
+  </script>
+</head>
+<body>
+  <div class="loader" id="loader" role="status" aria-label="加载中">
+    <img class="loader-cinna" src="./assets/ui/ui-button-cinna-big-ear-puppy-transparent-480.webp" alt="" draggable="false" />
+    <h1 class="loader-title">大耳帽兜冰淇淋甜筒</h1>
+    <div class="loader-bar"><i id="loaderFill"></i></div>
+    <p class="loader-text"><span id="loaderMsg">正在烤甜筒…</span><b id="loaderPct">0%</b></p>
+    <div class="loader-retry" id="loaderRetry" hidden>
+      <button type="button" onclick="location.reload()">重新加载</button>
+      <small>还是不行的话，换 Chrome / Safari 打开试试</small>
+    </div>
+  </div>
+
+  <div class="app" id="app" aria-hidden="true">
+    <header class="top">
+      <h1 class="title">大耳帽兜冰淇淋甜筒</h1>
+      <p class="hint" id="hint">先点「雪糕」，放上第一球</p>
+      <ol class="progress" id="progress" aria-label="已放上的配料">
+        <li data-k="scoop"><img src="./assets/ui/ui-button-ice-cream-scoop-pink-sparkle-transparent-480.webp" alt="" /></li>
+        <li data-k="wafers"><img src="./assets/ui/ui-button-wafer-roll-sticks-pair-transparent-480.webp" alt="" /></li>
+        <li data-k="pearls"><img src="./assets/ui/ui-button-pink-pearls-pair-transparent-480.webp" alt="" /></li>
+        <li data-k="jelly"><img src="./assets/ui/ui-button-cat-jelly-syrup-transparent-480.webp" alt="" /></li>
+        <li data-k="cinna"><img src="./assets/ui/ui-button-cinna-big-ear-puppy-transparent-480.webp" alt="" /></li>
+      </ol>
+      <div class="top-tools">
+        <button class="tool photo-open" id="photoBtn" type="button" aria-label="拍照保存">拍照</button>
+        <button class="tool note-open" id="noteBtn" type="button" aria-haspopup="dialog">设计说明</button>
+        <button class="tool sound" id="soundBtn" type="button" aria-label="音乐开关" data-on="1">♪</button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage">
+      <canvas id="scene" aria-label="可 360° 旋转的大耳帽兜冰淇淋甜筒"></canvas>
+      <button class="undo" id="undoBtn" type="button" aria-label="撤回上一步" hidden>↶ 撤回</button>
+      <div class="toast" id="toast" role="status"></div>
+      <div class="rotate-tip" id="rotateTip">↔ 拖动 360° 旋转</div>
+    </main>
+
+    <footer class="tray" id="tray">
+      <button class="pick" data-k="scoop" type="button">
+        <img src="./assets/ui/ui-button-ice-cream-scoop-pink-sparkle-transparent-480.webp" alt="" draggable="false" />
+        <span class="pick-label">雪糕</span>
+      </button>
+      <button class="pick" data-k="wafers" type="button">
+        <img src="./assets/ui/ui-button-wafer-roll-sticks-pair-transparent-480.webp" alt="" draggable="false" />
+        <span class="pick-label">饼干脆</span>
+      </button>
+      <button class="pick" data-k="pearls" type="button">
+        <img src="./assets/ui/ui-button-pink-pearls-pair-transparent-480.webp" alt="" draggable="false" />
+        <span class="pick-label">粉色珍珠</span>
+      </button>
+      <button class="pick" data-k="jelly" type="button">
+        <img src="./assets/ui/ui-button-cat-jelly-syrup-transparent-480.webp" alt="" draggable="false" />
+        <span class="pick-label">猫猫果冻酱</span>
+      </button>
+      <button class="pick pick-star" data-k="cinna" type="button">
+        <img src="./assets/ui/ui-button-cinna-big-ear-puppy-transparent-480.webp" alt="" draggable="false" />
+        <span class="pick-label">大耳帽兜</span>
+        <span class="pick-sub">最后登场</span>
+      </button>
+    </footer>
+
+    <section class="done" id="done" aria-hidden="true">
+      <p class="done-kicker">完成！和参考图一样可爱</p>
+      <p class="done-title">大耳帽兜冰淇淋甜筒</p>
+      <div class="done-actions">
+        <button type="button" class="btn btn-main" id="againBtn">再做一个</button>
+        <button type="button" class="btn btn-photo" id="donePhotoBtn">📷 拍照</button>
+        <button type="button" class="btn" id="spinBtn">暂停旋转</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- design note popup -->
+  <div class="note" id="note" role="dialog" aria-modal="true" aria-labelledby="noteTitle" hidden>
+    <div class="note-backdrop" data-close></div>
+    <article class="note-card">
+      <header class="note-head">
+        <div>
+          <p class="note-kicker">DESIGN NOTE · 参考图 1</p>
+          <h2 id="noteTitle">大耳帽兜冰淇淋 · 设计说明</h2>
+        </div>
+        <button class="note-close" type="button" data-close aria-label="关闭设计说明">×</button>
+      </header>
+      <div class="note-body">
+        <figure class="note-figure">
+          <img src="./assets/ui/ui-design-note-reference-cone-transparent-768.webp" width="768" height="1024" alt="参考图：大耳帽兜趴在粉色雪糕甜筒上" />
+          <span class="pin" style="--x:50%;--y:20%" data-side="r"><b>1</b><em>大耳帽兜</em></span>
+          <span class="pin" style="--x:20%;--y:31%" data-side="l"><b>2</b><em>垂耳</em></span>
+          <span class="pin" style="--x:51%;--y:43%" data-side="l"><b>3</b><em>珍珠×2</em></span>
+          <span class="pin" style="--x:67%;--y:36%" data-side="r"><b>4</b><em>猫猫果冻酱</em></span>
+          <span class="pin" style="--x:83%;--y:47%" data-side="l"><b>5</b><em>饼干脆×2</em></span>
+          <span class="pin" style="--x:38%;--y:60%" data-side="l"><b>6</b><em>雪糕球</em></span>
+          <span class="pin" style="--x:66%;--y:64%" data-side="r"><b>7</b><em>奶猫×2</em></span>
+          <span class="pin" style="--x:50%;--y:83%" data-side="r"><b>8</b><em>华夫甜筒</em></span>
+        </figure>
+        <div class="note-side">
+          <ol class="note-list">
+            <li><b>1</b><div><strong>大耳帽兜</strong><span>趴在球顶 · 最后登场</span><small>薄荷闭眼 · 腮红 · :3 嘴 · 小爪搭边</small></div></li>
+            <li><b>2</b><div><strong>垂耳</strong><span>两侧长长下垂</span><small>内侧粉渐变 · 左耳小星星</small></div></li>
+            <li><b>3</b><div><strong>粉色珍珠 ×2</strong><span>一大一小 · 球顶正前</span><small>高光糖衣 · 紧挨着放</small></div></li>
+            <li><b>4</b><div><strong>猫猫果冻酱</strong><span>右上 · 糖浆往下滴</span><small>草莓红猫头 · 透亮果冻</small></div></li>
+            <li><b>5</b><div><strong>饼干脆 ×2</strong><span>斜插右后方</span><small>巧克力螺纹 · 一高一低</small></div></li>
+            <li><b>6</b><div><strong>雪糕球</strong><span>第一步放上</span><small>粉→奶白渐变 · 闪粉 · 褶边</small></div></li>
+            <li><b>7</b><div><strong>奶猫 ×2</strong><span>随果冻酱一起</span><small>左上趴一只 · 右下趴一只</small></div></li>
+            <li><b>8</b><div><strong>华夫甜筒</strong><span>底座 · 一直都在</span><small>菱格纹 · 卷边 · 斜折缝</small></div></li>
+          </ol>
+          <div class="note-order">
+            <p class="note-sub">搭建顺序</p>
+            <div class="order-row">
+              <span><img src="./assets/ui/ui-button-ice-cream-scoop-pink-sparkle-transparent-480.webp" alt="" />雪糕</span>
+              <i>→</i>
+              <span class="order-any"><img src="./assets/ui/ui-button-wafer-roll-sticks-pair-transparent-480.webp" alt="" /><img src="./assets/ui/ui-button-pink-pearls-pair-transparent-480.webp" alt="" /><img src="./assets/ui/ui-button-cat-jelly-syrup-transparent-480.webp" alt="" />任意顺序</span>
+              <i>→</i>
+              <span><img src="./assets/ui/ui-button-cinna-big-ear-puppy-transparent-480.webp" alt="" />大耳帽兜</span>
+            </div>
+          </div>
+          <div class="note-palette">
+            <p class="note-sub">配色</p>
+            <ul>
+              <li style="--c:#F59BB2"><i></i>草莓粉</li>
+              <li style="--c:#FFF0DA"><i></i>奶白</li>
+              <li style="--c:#6FCAC4"><i></i>薄荷眼</li>
+              <li style="--c:#E5485C"><i></i>果冻红</li>
+              <li style="--c:#5B2F17"><i></i>巧克力</li>
+              <li style="--c:#E3A55C"><i></i>华夫</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- photo popup -->
+  <div class="photo" id="photo" role="dialog" aria-modal="true" aria-label="甜筒照片" hidden>
+    <div class="note-backdrop" data-pclose></div>
+    <figure class="photo-card">
+      <div class="photo-flash" id="photoFlash"></div>
+      <img id="photoImg" alt="我做的大耳帽兜冰淇淋甜筒" />
+      <figcaption id="photoTip">照片已生成</figcaption>
+      <div class="photo-actions">
+        <a class="btn btn-main" id="photoSave" download="大耳帽兜冰淇淋甜筒.png">保存图片</a>
+        <button type="button" class="btn" data-pclose>关闭</button>
+      </div>
+    </figure>
+  </div>
+
+  <audio id="bgm" src="./assets/audio/bgm-gentle-healing-loop.mp3" loop preload="none"></audio>
+  <audio id="meow" src="./assets/audio/sfx-cat-meow-cheerful-finish.m4a" preload="none"></audio>
+  <script src="./game.bundle.js" defer></script>
+</body>
+</html>
